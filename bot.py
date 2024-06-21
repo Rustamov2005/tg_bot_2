@@ -2,8 +2,11 @@
 import logging
 from db import Database
 from button import menu_keyboard, addresses_keyboard
+from inlenebutton import keyboard
 
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.dispatcher.filters import Text
 
 API_TOKEN = "7005859903:AAH3MjUCxej0QXXnTsuOG0h8s6v1ZYqWz0Q"
 
@@ -67,10 +70,26 @@ async def menu(message: types.Message):
 async def menu(message: types.Message):
     await message.answer("Menyular", reply_markup=addresses_keyboard)
 
-    
+
 @dp.message_handler(lambda message: message.text == "Back")
 async def menu(message: types.Message):
     await message.answer("Menyular", reply_markup=menu_keyboard)
+
+
+@dp.message_handler(lambda message: message.text == "Show Inline Buttons")
+async def show_inline_buttons(message: types.Message):
+    await message.answer("Choose an option:", reply_markup=keyboard)
+
+
+@dp.callback_query_handler(lambda c: c.data and c.data.startswith('option'))
+async def process_callback_button(callback_query: types.CallbackQuery):
+    code = callback_query.data
+    if code == 'option1':
+        await bot.answer_callback_query(callback_query.id, text='You pressed ➖')
+    elif code == 'option2':
+        await bot.answer_callback_query(callback_query.id, text='You pressed 1')
+    elif code == 'option3':
+        await bot.answer_callback_query(callback_query.id, text='You pressed ➕')
 
 
 @dp.message_handler()
